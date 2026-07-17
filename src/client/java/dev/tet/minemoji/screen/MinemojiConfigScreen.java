@@ -5,7 +5,7 @@ import dev.tet.minemoji.config.MinemojiConfig;
 import dev.tet.minemoji.slack.SlackEmojiRefreshResult;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -83,24 +83,24 @@ public final class MinemojiConfigScreen extends Screen {
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float deltaTicks) {
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
 		this.renderBackdrop(guiGraphics);
-		super.extractRenderState(guiGraphics, mouseX, mouseY, deltaTicks);
+		super.render(guiGraphics, mouseX, mouseY, deltaTicks);
 
 		int left = this.width / 2 - 155;
 		int top = 52;
 
-		guiGraphics.centeredText(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
-		guiGraphics.text(this.font, Component.literal(this.client.config().path().toString()), left, 34, 0xFF7F8A99, false);
+		guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
+		guiGraphics.drawString(this.font, Component.literal(this.client.config().path().toString()), left, 34, 0xFF7F8A99, false);
 
-		guiGraphics.text(this.font, TOKEN_LABEL, left, top, 0xFFE8EDF2, false);
-		guiGraphics.text(this.font, MAX_SUGGESTIONS_LABEL, left, top + 52, 0xFFE8EDF2, false);
-		guiGraphics.text(this.font, MIN_QUERY_LABEL, left + 160, top + 52, 0xFFE8EDF2, false);
-		guiGraphics.text(this.font, Component.literal("Values are saved to JSON and used immediately."), left, top + 102, 0xFF9FA8B7, false);
-		guiGraphics.text(this.font, this.statusMessage, left, this.height - 48, this.statusColor, false);
+		guiGraphics.drawString(this.font, TOKEN_LABEL, left, top, 0xFFE8EDF2, false);
+		guiGraphics.drawString(this.font, MAX_SUGGESTIONS_LABEL, left, top + 52, 0xFFE8EDF2, false);
+		guiGraphics.drawString(this.font, MIN_QUERY_LABEL, left + 160, top + 52, 0xFFE8EDF2, false);
+		guiGraphics.drawString(this.font, Component.literal("Values are saved to JSON and used immediately."), left, top + 102, 0xFF9FA8B7, false);
+		guiGraphics.drawString(this.font, this.statusMessage, left, this.height - 48, this.statusColor, false);
 	}
 
-	private void renderBackdrop(GuiGraphicsExtractor guiGraphics) {
+	private void renderBackdrop(GuiGraphics guiGraphics) {
 		int left = this.width / 2 - 167;
 		int top = 16;
 		int right = this.width / 2 + 167;

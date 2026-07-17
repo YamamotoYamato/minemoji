@@ -6,9 +6,8 @@ import dev.tet.minemoji.slack.SlackEmoji;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.resources.Identifier;
@@ -74,8 +73,8 @@ abstract class ChatScreenMixin {
 	@Unique
 	private String minemojiDismissedToken = "";
 
-	@Inject(method = "extractRenderState", at = @At("TAIL"))
-	private void minemoji$render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float tickDelta, CallbackInfo callbackInfo) {
+	@Inject(method = "render", at = @At("TAIL"))
+	private void minemoji$render(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, CallbackInfo callbackInfo) {
 		this.minemoji$updateSuggestions();
 		if (this.minemojiSuggestions.isEmpty()) {
 			return;
@@ -117,11 +116,11 @@ abstract class ChatScreenMixin {
 			guiGraphics.fill(iconX, iconY, iconX + MINEMOJI_ICON_SIZE, iconY + MINEMOJI_ICON_SIZE, 0xFF252932);
 			Identifier textureId = MinemojiClient.getInstance().slackEmojiTextureCache().getTexture(emoji);
 			if (textureId != null) {
-				guiGraphics.blit(RenderPipelines.GUI_TEXTURED, textureId, iconX, iconY, 0.0F, 0.0F, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE);
+				guiGraphics.blit(textureId, iconX, iconY, 0, 0, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE);
 			}
 
 			int textColor = index == this.minemojiSelectedIndex ? MINEMOJI_POPUP_SELECTED_TEXT : MINEMOJI_POPUP_TEXT;
-			guiGraphics.text(font, emoji.displayText(), iconX + MINEMOJI_ICON_SIZE + MINEMOJI_ICON_GAP, rowY + 2, textColor, true);
+				guiGraphics.drawString(font, emoji.displayText(), iconX + MINEMOJI_ICON_SIZE + MINEMOJI_ICON_GAP, rowY + 2, textColor, true);
 		}
 	}
 
