@@ -135,7 +135,10 @@ public final class SlackEmojiService {
 				String aliasOf = value.startsWith("alias:") ? value.substring("alias:".length()) : "";
 				loaded.add(new SlackEmoji(entry.getKey(), aliasOf, value));
 			}
-			this.addStandardEmoji(root.getAsJsonArray("categories"), loaded);
+			JsonArray categories = root.has("categories") && root.get("categories").isJsonArray()
+				? root.getAsJsonArray("categories")
+				: new JsonArray();
+			this.addStandardEmoji(categories, loaded);
 
 			loaded.sort(Comparator.comparing(SlackEmoji::name));
 			this.emojis = List.copyOf(loaded);

@@ -91,6 +91,7 @@ abstract class ChatScreenMixin {
 		int popupWidth = Math.max(MINEMOJI_POPUP_MIN_WIDTH, Math.min(this.input.getWidth(), contentWidth + MINEMOJI_POPUP_PADDING_X * 2 + MINEMOJI_ICON_SIZE + MINEMOJI_ICON_GAP));
 		int popupHeight = this.minemojiSuggestions.size() * rowHeight + MINEMOJI_POPUP_PADDING_Y * 2;
 		int popupX = this.input.getX();
+		popupX = Math.max(4, Math.min(popupX, this.width - popupWidth - 4));
 		int popupY = this.input.getY() - popupHeight - 4;
 		if (popupY < 4) {
 			popupY = this.input.getBottom() + 4;
