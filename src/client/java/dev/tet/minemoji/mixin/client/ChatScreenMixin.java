@@ -90,7 +90,7 @@ abstract class ChatScreenMixin {
 			.orElse(0);
 		int popupWidth = Math.max(MINEMOJI_POPUP_MIN_WIDTH, Math.min(this.input.getWidth(), contentWidth + MINEMOJI_POPUP_PADDING_X * 2 + MINEMOJI_ICON_SIZE + MINEMOJI_ICON_GAP));
 		int popupHeight = this.minemojiSuggestions.size() * rowHeight + MINEMOJI_POPUP_PADDING_Y * 2;
-		int popupX = this.input.getX();
+		int popupX = 4;
 		int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
 		popupX = Math.max(4, Math.min(popupX, screenWidth - popupWidth - 4));
 		int popupY = this.input.getY() - popupHeight - 4;
@@ -118,7 +118,7 @@ abstract class ChatScreenMixin {
 			guiGraphics.fill(iconX, iconY, iconX + MINEMOJI_ICON_SIZE, iconY + MINEMOJI_ICON_SIZE, 0xFF252932);
 			Identifier textureId = MinemojiClient.getInstance().slackEmojiTextureCache().getTexture(emoji);
 			if (textureId != null) {
-				guiGraphics.blit(textureId, iconX, iconY, 0, 0, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE);
+				guiGraphics.blit(textureId, iconX, iconY, 0, 0, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE, 72, 72);
 			}
 
 			int textColor = index == this.minemojiSelectedIndex ? MINEMOJI_POPUP_SELECTED_TEXT : MINEMOJI_POPUP_TEXT;
