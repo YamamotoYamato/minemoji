@@ -118,7 +118,7 @@ abstract class ChatScreenMixin {
 			guiGraphics.fill(iconX, iconY, iconX + MINEMOJI_ICON_SIZE, iconY + MINEMOJI_ICON_SIZE, 0xFF252932);
 			Identifier textureId = MinemojiClient.getInstance().slackEmojiTextureCache().getTexture(emoji);
 			if (textureId != null) {
-				guiGraphics.blit(textureId, iconX, iconY, 0, 0, MINEMOJI_ICON_SIZE, MINEMOJI_ICON_SIZE, 72, 72);
+				guiGraphics.blit(textureId, iconX, iconY, iconX + MINEMOJI_ICON_SIZE, iconY + MINEMOJI_ICON_SIZE, 0.0F, 1.0F, 0.0F, 1.0F);
 			}
 
 			int textColor = index == this.minemojiSelectedIndex ? MINEMOJI_POPUP_SELECTED_TEXT : MINEMOJI_POPUP_TEXT;
