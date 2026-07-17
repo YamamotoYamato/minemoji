@@ -1,6 +1,7 @@
 package dev.yamato.minemoji.mixin.client;
 
 import dev.yamato.minemoji.chat.ChatEmojiOverlay;
+import dev.yamato.minemoji.MinemojiClient;
 import dev.yamato.minemoji.chat.ChatEmojiParser;
 import java.util.List;
 import net.minecraft.client.GuiMessage;
@@ -54,7 +55,7 @@ abstract class ChatComponentMixin {
 			int age = currentTick - line.addedTime();
 			if (!focused && age >= 200) continue;
 			float opacity = (focused ? 1.0F : fadeOpacity(line.addedTime(), currentTick)) * chatOpacity;
-			if (opacity > 0.08F) ChatEmojiOverlay.renderTooltipScreen(graphics, font, baseline - index * spacing - offset, toText(line.content()), actualMouseX, actualMouseY, (float)scale);
+			if (opacity > 0.08F) ChatEmojiOverlay.renderTooltipScreen(graphics, font, baseline - index * spacing - offset, toText(line.content()), actualMouseX, actualMouseY, (float)scale, MinemojiClient.getInstance().config().hoverEmojiSize);
 		}
 	}
 
