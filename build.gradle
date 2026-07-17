@@ -46,6 +46,8 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 	localRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+	clientImplementation "com.github.usefulness:webp-imageio:0.10.2"
+	include "com.github.usefulness:webp-imageio:0.10.2"
 }
 
 processResources {

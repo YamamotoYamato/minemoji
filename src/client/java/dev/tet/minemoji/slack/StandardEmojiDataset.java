@@ -9,8 +9,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class StandardEmojiDataset {
 	private static final Gson GSON = new Gson();
@@ -33,6 +33,13 @@ public final class StandardEmojiDataset {
 		return this.unicodeByName.getOrDefault(shortName, "");
 	}
 
+	/** Slack標準絵文字名に対応するUnicode値を返す */
+	public String unicodeForSlackName(String slackName) {
+		String unicode = this.unicodeByName.get(slackName);
+		if (unicode != null) return unicode;
+		return this.unicodeByName.getOrDefault(slackName.replace('-', '_'), "");
+	}
+
 	/** 標準絵文字の名前とUnicode値を返す */
 	public Map<String, String> all() {
 		return this.unicodeByName;
@@ -46,10 +53,20 @@ public final class StandardEmojiDataset {
 		}
 
 		try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-			return GSON.fromJson(reader, MAP_TYPE);
+			return normalizeNames(GSON.fromJson(reader, MAP_TYPE));
 		} catch (IOException | RuntimeException exception) {
 			MinemojiClient.LOGGER.error("Failed to load standard emoji dataset from {}", RESOURCE_PATH, exception);
 			return Map.of();
 		}
+	}
+
+	/** Slackが採用する標準絵文字名へ名前を合わせる */
+	private static Map<String, String> normalizeNames(Map<String, String> source) {
+		Map<String, String> normalized = new HashMap<>(source);
+		String manBowing = normalized.remove("bowing_man");
+		String womanBowing = normalized.remove("bowing_woman");
+		if (manBowing != null) normalized.put("man-bowing", manBowing);
+		if (womanBowing != null) normalized.put("woman-bowing", womanBowing);
+		return Map.copyOf(normalized);
 	}
 }

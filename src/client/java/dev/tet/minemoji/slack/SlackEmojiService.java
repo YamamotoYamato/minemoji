@@ -31,9 +31,7 @@ public final class SlackEmojiService {
 		.connectTimeout(Duration.ofSeconds(10))
 		.build();
 
-	private volatile List<SlackEmoji> emojis = this.standardEmojiDataset.all().entrySet().stream()
-		.map(entry -> SlackEmoji.unicode(entry.getKey(), entry.getValue()))
-		.toList();
+	private volatile List<SlackEmoji> emojis = List.of();
 	private volatile Map<String, SlackEmoji> emojisByName = Map.of();
 	private volatile String lastError = "";
 	private volatile Instant lastRefreshAt;
@@ -75,9 +73,7 @@ public final class SlackEmojiService {
 	}
 
 	public void clear() {
-		this.emojis = this.standardEmojiDataset.all().entrySet().stream()
-			.map(entry -> SlackEmoji.unicode(entry.getKey(), entry.getValue()))
-			.toList();
+		this.emojis = List.of();
 		this.emojisByName = Map.of();
 		this.lastError = "";
 		this.lastRefreshAt = null;
@@ -139,7 +135,7 @@ public final class SlackEmojiService {
 				String aliasOf = value.startsWith("alias:") ? value.substring("alias:".length()) : "";
 				loaded.add(new SlackEmoji(entry.getKey(), aliasOf, value));
 			}
-			this.addStandardEmoji(loaded);
+			this.addSlackStandardEmoji(root, loaded);
 
 			loaded.sort(Comparator.comparing(SlackEmoji::name));
 			this.emojis = List.copyOf(loaded);
@@ -185,13 +181,20 @@ public final class SlackEmojiService {
 		return "Slack emoji.list failed: " + error;
 	}
 
-	private void addStandardEmoji(List<SlackEmoji> loaded) {
+	/** Slack APIが返す標準絵文字名をUnicode絵文字として一覧へ追加する */
+	private void addSlackStandardEmoji(JsonObject root, List<SlackEmoji> loaded) {
 		java.util.Set<String> existingNames = loaded.stream()
 			.map(SlackEmoji::name)
 			.collect(java.util.stream.Collectors.toCollection(java.util.HashSet::new));
-		for (Map.Entry<String, String> entry : this.standardEmojiDataset.all().entrySet()) {
-			if (existingNames.add(entry.getKey())) {
-				loaded.add(SlackEmoji.unicode(entry.getKey(), entry.getValue()));
+		if (!root.has("categories") || !root.get("categories").isJsonArray()) return;
+		for (JsonElement categoryElement : root.getAsJsonArray("categories")) {
+			JsonArray names = categoryElement.getAsJsonObject().getAsJsonArray("emoji_names");
+			for (JsonElement nameElement : names) {
+				String name = nameElement.getAsString();
+				String unicode = this.standardEmojiDataset.unicodeForSlackName(name);
+				if (!unicode.isBlank() && existingNames.add(name)) {
+					loaded.add(SlackEmoji.unicode(name, unicode));
+				}
 			}
 		}
 	}
