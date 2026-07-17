@@ -56,6 +56,11 @@ public final class SlackEmojiService {
 			.toList();
 	}
 
+	/** 名前からチャット表示用のSlack絵文字を取得する */
+	public SlackEmoji find(String name) {
+		return this.emojisByName.get(name.toLowerCase(java.util.Locale.ROOT));
+	}
+
 	public CompletableFuture<SlackEmojiRefreshResult> refreshAsync() {
 		if (!this.config.isConfigured()) {
 			this.lastError = "No Slack token configured.";

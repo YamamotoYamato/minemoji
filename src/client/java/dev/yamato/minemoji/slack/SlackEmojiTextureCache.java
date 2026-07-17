@@ -134,6 +134,7 @@ public final class SlackEmojiTextureCache {
 
 	private record DecodedTexture(List<NativeImage> frames) {}
 
+
 	private static final class AnimatedTexture {
 		private final List<Identifier> frameIds;
 		private int frame;

@@ -3,7 +3,8 @@
 	"package": "dev.yamato.minemoji.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ChatScreenMixin"
+		"ChatScreenMixin",
+		"ChatComponentMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
