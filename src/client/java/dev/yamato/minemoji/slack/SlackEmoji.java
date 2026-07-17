@@ -1,4 +1,4 @@
-package dev.tet.minemoji.slack;
+package dev.yamato.minemoji.slack;
 
 import java.util.Locale;
 
@@ -39,3 +39,4 @@ public record SlackEmoji(String name, String aliasOf, String value) {
 		return new SlackEmoji(name, "", UNICODE_PREFIX + unicodeValue);
 	}
 }
+

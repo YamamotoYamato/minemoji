@@ -1,11 +1,11 @@
-package dev.tet.minemoji.slack;
+package dev.yamato.minemoji.slack;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.tet.minemoji.MinemojiClient;
-import dev.tet.minemoji.config.MinemojiConfig;
+import dev.yamato.minemoji.MinemojiClient;
+import dev.yamato.minemoji.config.MinemojiConfig;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -236,3 +236,4 @@ public final class SlackEmojiService {
 		return exception.getClass().getSimpleName();
 	}
 }
+

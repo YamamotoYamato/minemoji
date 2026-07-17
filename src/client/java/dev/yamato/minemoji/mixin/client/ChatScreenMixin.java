@@ -1,8 +1,8 @@
-package dev.tet.minemoji.mixin.client;
+package dev.yamato.minemoji.mixin.client;
 
-import dev.tet.minemoji.MinemojiClient;
-import dev.tet.minemoji.chat.EmojiCompletion;
-import dev.tet.minemoji.slack.SlackEmoji;
+import dev.yamato.minemoji.MinemojiClient;
+import dev.yamato.minemoji.chat.EmojiCompletion;
+import dev.yamato.minemoji.slack.SlackEmoji;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -230,3 +230,4 @@ abstract class ChatScreenMixin {
 		this.minemojiDismissedToken = "";
 	}
 }
+

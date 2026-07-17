@@ -1,8 +1,8 @@
-package dev.tet.minemoji.integration;
+package dev.yamato.minemoji.integration;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import dev.tet.minemoji.screen.MinemojiConfigScreen;
+import dev.yamato.minemoji.screen.MinemojiConfigScreen;
 
 public final class MinemojiModMenuIntegration implements ModMenuApi {
 	@Override
@@ -10,3 +10,4 @@ public final class MinemojiModMenuIntegration implements ModMenuApi {
 		return MinemojiConfigScreen::new;
 	}
 }
+

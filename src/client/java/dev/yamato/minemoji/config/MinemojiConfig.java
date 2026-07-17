@@ -1,8 +1,8 @@
-package dev.tet.minemoji.config;
+package dev.yamato.minemoji.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dev.tet.minemoji.MinemojiClient;
+import dev.yamato.minemoji.MinemojiClient;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -78,3 +78,4 @@ public final class MinemojiConfig {
 		this.minimumQueryLength = Math.max(1, this.minimumQueryLength);
 	}
 }
+

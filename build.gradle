@@ -44,8 +44,8 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	mappings loom.officialMojangMappings()
-	compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-	localRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+	modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+	modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
 	clientImplementation "com.github.usefulness:webp-imageio:0.10.2"
 	include "com.github.usefulness:webp-imageio:0.10.2"
 }
@@ -71,8 +71,6 @@ java {
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
 }
-
-sourceSets.client.java.exclude '**/integration/MinemojiModMenuIntegration.java'
 
 jar {
 	inputs.property "archivesName", project.base.archivesName

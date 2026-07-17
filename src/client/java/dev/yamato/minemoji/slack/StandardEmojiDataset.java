@@ -1,8 +1,8 @@
-package dev.tet.minemoji.slack;
+package dev.yamato.minemoji.slack;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import dev.tet.minemoji.MinemojiClient;
+import dev.yamato.minemoji.MinemojiClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -70,3 +70,4 @@ public final class StandardEmojiDataset {
 		return Map.copyOf(normalized);
 	}
 }
+

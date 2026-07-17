@@ -1,7 +1,7 @@
-package dev.tet.minemoji.slack;
+package dev.yamato.minemoji.slack;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import dev.tet.minemoji.MinemojiClient;
+import dev.yamato.minemoji.MinemojiClient;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -154,3 +154,4 @@ public final class SlackEmojiTextureCache {
 		private void release(Minecraft minecraft) { this.frameIds.forEach(minecraft.getTextureManager()::release); }
 	}
 }
+

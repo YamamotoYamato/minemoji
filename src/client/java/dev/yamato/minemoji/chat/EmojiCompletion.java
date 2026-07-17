@@ -1,4 +1,4 @@
-package dev.tet.minemoji.chat;
+package dev.yamato.minemoji.chat;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -57,3 +57,4 @@ public final class EmojiCompletion {
 	public record Applied(String value, int cursor) {
 	}
 }
+

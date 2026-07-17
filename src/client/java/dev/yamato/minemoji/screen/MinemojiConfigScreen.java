@@ -1,8 +1,8 @@
-package dev.tet.minemoji.screen;
+package dev.yamato.minemoji.screen;
 
-import dev.tet.minemoji.MinemojiClient;
-import dev.tet.minemoji.config.MinemojiConfig;
-import dev.tet.minemoji.slack.SlackEmojiRefreshResult;
+import dev.yamato.minemoji.MinemojiClient;
+import dev.yamato.minemoji.config.MinemojiConfig;
+import dev.yamato.minemoji.slack.SlackEmojiRefreshResult;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -215,3 +215,4 @@ public final class MinemojiConfigScreen extends Screen {
 	private record ParsedValues(String slackToken, int maxSuggestions, int minimumQueryLength, boolean refreshOnStartup) {
 	}
 }
+

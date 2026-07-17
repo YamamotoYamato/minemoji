@@ -1,4 +1,4 @@
-package dev.tet.minemoji.slack;
+package dev.yamato.minemoji.slack;
 
 public record SlackEmojiRefreshResult(boolean success, String message, int loadedCount) {
 	public static SlackEmojiRefreshResult success(int loadedCount) {
@@ -9,3 +9,4 @@ public record SlackEmojiRefreshResult(boolean success, String message, int loade
 		return new SlackEmojiRefreshResult(false, message, loadedCount);
 	}
 }
+

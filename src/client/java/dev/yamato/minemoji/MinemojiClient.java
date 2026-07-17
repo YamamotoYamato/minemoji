@@ -1,11 +1,11 @@
-package dev.tet.minemoji;
+package dev.yamato.minemoji;
 
 import com.mojang.brigadier.Command;
-import dev.tet.minemoji.config.MinemojiConfig;
-import dev.tet.minemoji.screen.MinemojiConfigScreen;
-import dev.tet.minemoji.slack.SlackEmojiRefreshResult;
-import dev.tet.minemoji.slack.SlackEmojiService;
-import dev.tet.minemoji.slack.SlackEmojiTextureCache;
+import dev.yamato.minemoji.config.MinemojiConfig;
+import dev.yamato.minemoji.screen.MinemojiConfigScreen;
+import dev.yamato.minemoji.slack.SlackEmojiRefreshResult;
+import dev.yamato.minemoji.slack.SlackEmojiService;
+import dev.yamato.minemoji.slack.SlackEmojiTextureCache;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -105,3 +105,4 @@ public final class MinemojiClient implements ClientModInitializer {
 		return throwable.getClass().getSimpleName();
 	}
 }
+

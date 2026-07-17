@@ -5,16 +5,16 @@
 	"name": "Minemoji",
 	"description": "Slack workspace custom emoji suggestions for the Minecraft chat screen.",
 	"authors": [
-		"tet"
+		"YamamotoYamato"
 	],
 	"license": "CC0-1.0",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-			"dev.tet.minemoji.MinemojiClient"
+			"dev.yamato.minemoji.MinemojiClient"
 		],
 		"modmenu": [
-			"dev.tet.minemoji.integration.MinemojiModMenuIntegration"
+			"dev.yamato.minemoji.integration.MinemojiModMenuIntegration"
 		]
 	},
 	"mixins": [
@@ -33,3 +33,5 @@
 		"modmenu": "*"
 	}
 }
+
+
