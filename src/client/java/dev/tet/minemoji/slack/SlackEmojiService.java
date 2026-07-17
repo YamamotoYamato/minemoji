@@ -31,7 +31,9 @@ public final class SlackEmojiService {
 		.connectTimeout(Duration.ofSeconds(10))
 		.build();
 
-	private volatile List<SlackEmoji> emojis = List.of();
+	private volatile List<SlackEmoji> emojis = this.standardEmojiDataset.all().entrySet().stream()
+		.map(entry -> SlackEmoji.unicode(entry.getKey(), entry.getValue()))
+		.toList();
 	private volatile Map<String, SlackEmoji> emojisByName = Map.of();
 	private volatile String lastError = "";
 	private volatile Instant lastRefreshAt;
@@ -73,7 +75,9 @@ public final class SlackEmojiService {
 	}
 
 	public void clear() {
-		this.emojis = List.of();
+		this.emojis = this.standardEmojiDataset.all().entrySet().stream()
+			.map(entry -> SlackEmoji.unicode(entry.getKey(), entry.getValue()))
+			.toList();
 		this.emojisByName = Map.of();
 		this.lastError = "";
 		this.lastRefreshAt = null;
@@ -135,10 +139,7 @@ public final class SlackEmojiService {
 				String aliasOf = value.startsWith("alias:") ? value.substring("alias:".length()) : "";
 				loaded.add(new SlackEmoji(entry.getKey(), aliasOf, value));
 			}
-			JsonArray categories = root.has("categories") && root.get("categories").isJsonArray()
-				? root.getAsJsonArray("categories")
-				: new JsonArray();
-			this.addStandardEmoji(categories, loaded);
+			this.addStandardEmoji(loaded);
 
 			loaded.sort(Comparator.comparing(SlackEmoji::name));
 			this.emojis = List.copyOf(loaded);
@@ -184,35 +185,13 @@ public final class SlackEmojiService {
 		return "Slack emoji.list failed: " + error;
 	}
 
-	private void addStandardEmoji(JsonArray categories, List<SlackEmoji> loaded) {
-		if (categories == null) {
-			return;
-		}
-
+	private void addStandardEmoji(List<SlackEmoji> loaded) {
 		java.util.Set<String> existingNames = loaded.stream()
 			.map(SlackEmoji::name)
 			.collect(java.util.stream.Collectors.toCollection(java.util.HashSet::new));
-
-		for (JsonElement categoryElement : categories) {
-			if (!categoryElement.isJsonObject()) {
-				continue;
-			}
-
-			JsonArray emojiNames = categoryElement.getAsJsonObject().getAsJsonArray("emoji_names");
-			if (emojiNames == null) {
-				continue;
-			}
-
-			for (JsonElement emojiNameElement : emojiNames) {
-				String emojiName = emojiNameElement.getAsString();
-				if (!existingNames.add(emojiName)) {
-					continue;
-				}
-
-				String unicode = this.standardEmojiDataset.unicodeFor(emojiName);
-				if (!unicode.isBlank()) {
-					loaded.add(SlackEmoji.unicode(emojiName, unicode));
-				}
+		for (Map.Entry<String, String> entry : this.standardEmojiDataset.all().entrySet()) {
+			if (existingNames.add(entry.getKey())) {
+				loaded.add(SlackEmoji.unicode(entry.getKey(), entry.getValue()));
 			}
 		}
 	}

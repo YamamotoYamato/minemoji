@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class StandardEmojiDataset {
 	private static final Gson GSON = new Gson();
@@ -30,6 +31,11 @@ public final class StandardEmojiDataset {
 
 	public String unicodeFor(String shortName) {
 		return this.unicodeByName.getOrDefault(shortName, "");
+	}
+
+	/** 標準絵文字の名前とUnicode値を返す */
+	public Map<String, String> all() {
+		return this.unicodeByName;
 	}
 
 	private static Map<String, String> load() {
