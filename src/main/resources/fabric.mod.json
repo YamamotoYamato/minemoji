@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "minemoji",
+	"version": "${version}",
+	"name": "Minemoji",
+	"description": "Slack workspace custom emoji suggestions for the Minecraft chat screen.",
+	"authors": [
+		"tet"
+	],
+	"license": "CC0-1.0",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"dev.tet.minemoji.MinemojiClient"
+		],
+		"modmenu": [
+			"dev.tet.minemoji.integration.MinemojiModMenuIntegration"
+		]
+	},
+	"mixins": [
+		{
+			"config": "minemoji.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}
