@@ -57,4 +57,4 @@ Java 25 が必要です。
 
 ## License
 
-CC0-1.0
+MIT License
