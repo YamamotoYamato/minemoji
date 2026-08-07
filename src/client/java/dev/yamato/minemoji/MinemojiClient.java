@@ -8,7 +8,7 @@ import dev.yamato.minemoji.slack.SlackEmojiService;
 import dev.yamato.minemoji.slack.SlackEmojiTextureCache;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -52,20 +52,20 @@ public final class MinemojiClient implements ClientModInitializer {
 
 	private void registerCommands() {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(
-			ClientCommandManager.literal(MOD_ID)
+			ClientCommands.literal(MOD_ID)
 				.executes(context -> {
 					this.config.reload();
 					context.getSource().sendFeedback(Component.literal(this.slackEmojiService.describeStatus()));
 					return Command.SINGLE_SUCCESS;
 				})
-				.then(ClientCommandManager.literal("config")
+				.then(ClientCommands.literal("config")
 					.executes(context -> {
 						Minecraft minecraft = Minecraft.getInstance();
-						minecraft.execute(() -> minecraft.setScreen(new MinemojiConfigScreen(null)));
+						minecraft.execute(() -> minecraft.setScreenAndShow(new MinemojiConfigScreen(null)));
 						return Command.SINGLE_SUCCESS;
 					})
 				)
-				.then(ClientCommandManager.literal("refresh")
+				.then(ClientCommands.literal("refresh")
 					.executes(context -> {
 						this.config.reload();
 						if (!this.config.isConfigured()) {

@@ -6,7 +6,7 @@ import dev.yamato.minemoji.slack.SlackEmoji;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -73,8 +73,8 @@ abstract class ChatScreenMixin {
 	@Unique
 	private String minemojiDismissedToken = "";
 
-	@Inject(method = "render", at = @At("TAIL"))
-	private void minemoji$render(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta, CallbackInfo callbackInfo) {
+	@Inject(method = "extractRenderState", at = @At("TAIL"))
+	private void minemoji$render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float tickDelta, CallbackInfo callbackInfo) {
 		this.minemoji$updateSuggestions();
 		if (this.minemojiSuggestions.isEmpty()) {
 			return;
@@ -122,7 +122,7 @@ abstract class ChatScreenMixin {
 			}
 
 			int textColor = index == this.minemojiSelectedIndex ? MINEMOJI_POPUP_SELECTED_TEXT : MINEMOJI_POPUP_TEXT;
-				guiGraphics.drawString(font, emoji.displayText(), iconX + MINEMOJI_ICON_SIZE + MINEMOJI_ICON_GAP, rowY + 2, textColor, true);
+				guiGraphics.text(font, emoji.displayText(), iconX + MINEMOJI_ICON_SIZE + MINEMOJI_ICON_GAP, rowY + 2, textColor, true);
 		}
 	}
 

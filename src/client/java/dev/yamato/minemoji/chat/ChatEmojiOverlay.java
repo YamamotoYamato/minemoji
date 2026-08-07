@@ -3,7 +3,7 @@ package dev.yamato.minemoji.chat;
 import dev.yamato.minemoji.MinemojiClient;
 import dev.yamato.minemoji.slack.SlackEmoji;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /** 通常のチャット描画後にSlack絵文字を重ねて描画する */
 public final class ChatEmojiOverlay {
@@ -12,7 +12,7 @@ public final class ChatEmojiOverlay {
 	}
 
 	/** 画面座標で絵文字のホバー画像を表示する */
-	public static void renderTooltipScreen(GuiGraphics graphics, Font font, int y, String text, int mouseX, int mouseY, float scale, int imageSize) {
+	public static void renderTooltipScreen(GuiGraphicsExtractor graphics, Font font, int y, String text, int mouseX, int mouseY, float scale, int imageSize) {
 		for (ChatEmojiToken token : ChatEmojiParser.find(text)) {
 			int left = 4 + Math.round(scale * font.width(text.substring(0, token.start())));
 			int right = left + Math.round(scale * font.width(token.text()));

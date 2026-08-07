@@ -5,7 +5,7 @@ import dev.yamato.minemoji.config.MinemojiConfig;
 import dev.yamato.minemoji.slack.SlackEmojiRefreshResult;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -98,9 +98,9 @@ public final class MinemojiConfigScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float deltaTicks) {
 		this.renderBackdrop(guiGraphics);
-		super.render(guiGraphics, mouseX, mouseY, deltaTicks);
+		super.extractRenderState(guiGraphics, mouseX, mouseY, deltaTicks);
 
 		int left = this.width / 2 - 155;
 		int top = 52;
@@ -115,18 +115,18 @@ public final class MinemojiConfigScreen extends Screen {
 		int hoverFieldY = hoverLabelY + this.font.lineHeight + labelGap;
 		int refreshY = hoverFieldY + fieldHeight + rowGap;
 
-		guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
-		guiGraphics.drawString(this.font, Component.literal(this.client.config().path().toString()), left, 34, 0xFF7F8A99, false);
+		guiGraphics.centeredText(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
+		guiGraphics.text(this.font, Component.literal(this.client.config().path().toString()), left, 34, 0xFF7F8A99, false);
 
-		guiGraphics.drawString(this.font, TOKEN_LABEL, left, tokenLabelY, 0xFFE8EDF2, false);
-		guiGraphics.drawString(this.font, MAX_SUGGESTIONS_LABEL, left, pairLabelY, 0xFFE8EDF2, false);
-		guiGraphics.drawString(this.font, MIN_QUERY_LABEL, left + 160, pairLabelY, 0xFFE8EDF2, false);
-		guiGraphics.drawString(this.font, HOVER_EMOJI_SIZE_LABEL, left, hoverLabelY, 0xFFE8EDF2, false);
-		guiGraphics.drawString(this.font, Component.literal("Values are saved to JSON and used immediately."), left, refreshY + 26, 0xFF9FA8B7, false);
-		guiGraphics.drawString(this.font, this.statusMessage, left, this.height - 48, this.statusColor, false);
+		guiGraphics.text(this.font, TOKEN_LABEL, left, tokenLabelY, 0xFFE8EDF2, false);
+		guiGraphics.text(this.font, MAX_SUGGESTIONS_LABEL, left, pairLabelY, 0xFFE8EDF2, false);
+		guiGraphics.text(this.font, MIN_QUERY_LABEL, left + 160, pairLabelY, 0xFFE8EDF2, false);
+		guiGraphics.text(this.font, HOVER_EMOJI_SIZE_LABEL, left, hoverLabelY, 0xFFE8EDF2, false);
+		guiGraphics.text(this.font, Component.literal("Values are saved to JSON and used immediately."), left, refreshY + 26, 0xFF9FA8B7, false);
+		guiGraphics.text(this.font, this.statusMessage, left, this.height - 48, this.statusColor, false);
 	}
 
-	private void renderBackdrop(GuiGraphics guiGraphics) {
+	private void renderBackdrop(GuiGraphicsExtractor guiGraphics) {
 		int left = this.width / 2 - 167;
 		int top = 16;
 		int right = this.width / 2 + 167;
@@ -143,7 +143,7 @@ public final class MinemojiConfigScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.minecraft.setScreen(this.parent);
+		this.minecraft.setScreenAndShow(this.parent);
 	}
 
 	private void save() {

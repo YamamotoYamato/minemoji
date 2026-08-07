@@ -4,11 +4,11 @@ import dev.yamato.minemoji.chat.ChatEmojiOverlay;
 import dev.yamato.minemoji.MinemojiClient;
 import dev.yamato.minemoji.chat.ChatEmojiParser;
 import java.util.List;
-import net.minecraft.client.GuiMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.chat.GuiMessage;
 import net.minecraft.util.FormattedCharSequence;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,8 +23,8 @@ abstract class ChatComponentMixin {
 	@Shadow private int chatScrollbarPos;
 	@Shadow protected abstract double getScale();
 
-	@Inject(method = "render", at = @At("TAIL"))
-	private void minemoji$renderOverlay(GuiGraphics graphics, Font font, int mouseX, int mouseY, int currentTick, boolean focused, boolean changeCursor, CallbackInfo callback) {
+	@Inject(method = "extractRenderState", at = @At("TAIL"))
+	private void minemoji$renderOverlay(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY, int currentTick, ChatComponent.DisplayMode displayMode, boolean focused, CallbackInfo callback) {
 		Minecraft minecraft = Minecraft.getInstance();
 		var window = minecraft.getWindow();
 		int actualMouseX = (int)Math.floor(minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / (double)window.getScreenWidth());

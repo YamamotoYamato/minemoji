@@ -1,6 +1,6 @@
 # Minemoji
 
-Fabric 26.1 向けのクライアント mod です。Minecraft のチャット欄で `:emoji_code` を入力すると、Slack Workspace のカスタム絵文字コード候補を表示します。
+Fabric 26.2 向けのクライアント mod です。Minecraft のチャット欄で `:emoji_code` を入力すると、Slack Workspace のカスタム絵文字コード候補を表示します。
 
 ## 現状の仕様
 
