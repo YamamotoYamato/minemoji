@@ -15,6 +15,7 @@ public final class MinemojiConfig {
 	public String slackToken = "";
 	public int maxSuggestions = 8;
 	public int minimumQueryLength = 1;
+	public int hoverEmojiSize = 24;
 	public boolean refreshOnStartup = true;
 
 	private transient Path path;
@@ -56,6 +57,7 @@ public final class MinemojiConfig {
 		this.slackToken = loaded.slackToken;
 		this.maxSuggestions = loaded.maxSuggestions;
 		this.minimumQueryLength = loaded.minimumQueryLength;
+		this.hoverEmojiSize = loaded.hoverEmojiSize;
 		this.refreshOnStartup = loaded.refreshOnStartup;
 		this.normalize();
 	}
@@ -76,5 +78,6 @@ public final class MinemojiConfig {
 		this.slackToken = this.slackToken == null ? "" : this.slackToken.trim();
 		this.maxSuggestions = Math.max(1, this.maxSuggestions);
 		this.minimumQueryLength = Math.max(1, this.minimumQueryLength);
+		this.hoverEmojiSize = Math.max(1, Math.min(128, this.hoverEmojiSize));
 	}
 }

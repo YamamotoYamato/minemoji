@@ -3,7 +3,8 @@
 	"package": "dev.tet.minemoji.mixin.client",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"ChatScreenMixin"
+		"ChatScreenMixin",
+		"ChatComponentMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

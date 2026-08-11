@@ -2,8 +2,10 @@ package dev.tet.minemoji.slack;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.tet.minemoji.MinemojiClient;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -12,10 +14,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
@@ -25,7 +32,7 @@ public final class SlackEmojiTextureCache {
 	private final HttpClient httpClient = HttpClient.newBuilder()
 		.connectTimeout(Duration.ofSeconds(10))
 		.build();
-	private final Map<String, Identifier> textureIdsByUrl = new ConcurrentHashMap<>();
+	private final Map<String, AnimatedTexture> texturesByUrl = new ConcurrentHashMap<>();
 	private final Set<String> loadingUrls = ConcurrentHashMap.newKeySet();
 	private final Set<String> failedUrls = ConcurrentHashMap.newKeySet();
 
@@ -39,14 +46,11 @@ public final class SlackEmojiTextureCache {
 			return null;
 		}
 
-		Identifier existing = this.textureIdsByUrl.get(imageUrl);
-		if (existing != null) {
-			return existing;
+		AnimatedTexture texture = this.texturesByUrl.get(imageUrl);
+		if (texture != null) {
+			return texture.current(System.nanoTime() / 1_000_000L);
 		}
-		if (this.failedUrls.contains(imageUrl)) {
-			return null;
-		}
-		if (this.loadingUrls.add(imageUrl)) {
+		if (!this.failedUrls.contains(imageUrl) && this.loadingUrls.add(imageUrl)) {
 			this.loadAsync(imageUrl);
 		}
 		return null;
@@ -55,17 +59,17 @@ public final class SlackEmojiTextureCache {
 	public void clear() {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft != null) {
-			this.textureIdsByUrl.values().forEach(minecraft.getTextureManager()::release);
+			this.texturesByUrl.values().forEach(texture -> texture.release(minecraft));
 		}
-		this.textureIdsByUrl.clear();
+		this.texturesByUrl.clear();
 		this.loadingUrls.clear();
 		this.failedUrls.clear();
 	}
 
 	private void loadAsync(String imageUrl) {
 		CompletableFuture.supplyAsync(() -> this.downloadTexture(imageUrl))
-			.whenComplete((nativeImage, throwable) -> {
-				if (throwable != null || nativeImage == null) {
+			.whenComplete((decoded, throwable) -> {
+				if (throwable != null || decoded == null || decoded.frames().isEmpty()) {
 					this.loadingUrls.remove(imageUrl);
 					this.failedUrls.add(imageUrl);
 					if (throwable != null) {
@@ -74,26 +78,51 @@ public final class SlackEmojiTextureCache {
 					return;
 				}
 
-				Minecraft minecraft = Minecraft.getInstance();
-				minecraft.execute(() -> this.registerTexture(imageUrl, nativeImage));
+				Minecraft.getInstance().execute(() -> this.registerTexture(imageUrl, decoded));
 			});
 	}
 
-	private NativeImage downloadTexture(String imageUrl) {
+	private DecodedTexture downloadTexture(String imageUrl) {
 		HttpRequest request = HttpRequest.newBuilder(URI.create(imageUrl))
 			.timeout(Duration.ofSeconds(15))
 			.GET()
 			.build();
 
 		try {
-			HttpResponse<InputStream> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+			HttpResponse<byte[]> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+			if (response.statusCode() == 404 && imageUrl.startsWith("https://cdnjs.cloudflare.com/")) {
+				String fallbackUrl = imageUrl.substring(0, imageUrl.length() - 4) + "-fe0f.png";
+				request = HttpRequest.newBuilder(URI.create(fallbackUrl))
+					.timeout(Duration.ofSeconds(15))
+					.GET()
+					.build();
+				response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+			}
 			if (response.statusCode() != 200) {
 				return null;
 			}
 
-			try (InputStream stream = response.body()) {
-				return NativeImage.read(stream);
+			List<NativeImage> frames = new ArrayList<>();
+			try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(response.body()))) {
+				if (input == null) {
+					return null;
+				}
+				var readers = ImageIO.getImageReaders(input);
+				if (!readers.hasNext()) {
+					return null;
+				}
+				ImageReader reader = readers.next();
+				try {
+					reader.setInput(input, false, false);
+					int count = reader.getNumImages(true);
+					for (int index = 0; index < count; index++) {
+						frames.add(toNativeImage(reader.read(index)));
+					}
+				} finally {
+					reader.dispose();
+				}
 			}
+			return new DecodedTexture(frames);
 		} catch (IOException | InterruptedException exception) {
 			if (exception instanceof InterruptedException) {
 				Thread.currentThread().interrupt();
@@ -102,12 +131,23 @@ public final class SlackEmojiTextureCache {
 		}
 	}
 
-	private void registerTexture(String imageUrl, NativeImage nativeImage) {
+	private static NativeImage toNativeImage(BufferedImage image) throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		ImageIO.write(image, "PNG", output);
+		return NativeImage.read(new ByteArrayInputStream(output.toByteArray()));
+	}
+
+	private void registerTexture(String imageUrl, DecodedTexture decoded) {
+		List<Identifier> ids = new ArrayList<>();
 		try {
-			Identifier textureId = Identifier.fromNamespaceAndPath(MinemojiClient.MOD_ID, "slack/" + digest(imageUrl));
-			DynamicTexture texture = new DynamicTexture(() -> "Minemoji Slack emoji", nativeImage);
-			Minecraft.getInstance().getTextureManager().register(textureId, texture);
-			this.textureIdsByUrl.put(imageUrl, textureId);
+			String base = "slack/" + digest(imageUrl);
+			for (int index = 0; index < decoded.frames().size(); index++) {
+				Identifier id = Identifier.fromNamespaceAndPath(MinemojiClient.MOD_ID, base + "/frame" + index);
+				DynamicTexture texture = new DynamicTexture(() -> "Minemoji Slack emoji", decoded.frames().get(index));
+				Minecraft.getInstance().getTextureManager().register(id, texture);
+				ids.add(id);
+			}
+			this.texturesByUrl.put(imageUrl, new AnimatedTexture(ids));
 		} finally {
 			this.loadingUrls.remove(imageUrl);
 		}
@@ -125,6 +165,31 @@ public final class SlackEmojiTextureCache {
 			return builder.toString();
 		} catch (NoSuchAlgorithmException exception) {
 			throw new IllegalStateException("SHA-1 is not available", exception);
+		}
+	}
+
+	private record DecodedTexture(List<NativeImage> frames) {
+	}
+
+	private static final class AnimatedTexture {
+		private final List<Identifier> frameIds;
+		private int frame;
+		private long nextFrameAt;
+
+		private AnimatedTexture(List<Identifier> frameIds) {
+			this.frameIds = frameIds;
+		}
+
+		private Identifier current(long now) {
+			if (this.frameIds.size() > 1 && now >= this.nextFrameAt) {
+				this.frame = (this.frame + 1) % this.frameIds.size();
+				this.nextFrameAt = now + 100;
+			}
+			return this.frameIds.get(this.frame);
+		}
+
+		private void release(Minecraft minecraft) {
+			this.frameIds.forEach(minecraft.getTextureManager()::release);
 		}
 	}
 }

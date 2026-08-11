@@ -17,6 +17,7 @@ public final class MinemojiConfigScreen extends Screen {
 	private static final Component TOKEN_LABEL = Component.literal("Slack Token");
 	private static final Component MAX_SUGGESTIONS_LABEL = Component.literal("Max Suggestions");
 	private static final Component MIN_QUERY_LABEL = Component.literal("Minimum Query Length");
+	private static final Component HOVER_EMOJI_SIZE_LABEL = Component.literal("Hover Emoji Size");
 	private static final Component REFRESH_ON_STARTUP_LABEL = Component.literal("Refresh On Startup");
 
 	private final Screen parent;
@@ -25,6 +26,7 @@ public final class MinemojiConfigScreen extends Screen {
 	private EditBox tokenBox;
 	private EditBox maxSuggestionsBox;
 	private EditBox minimumQueryLengthBox;
+	private EditBox hoverEmojiSizeBox;
 	private CycleButton<Boolean> refreshOnStartupButton;
 
 	private Component statusMessage = Component.literal("Edit values and press Save.");
@@ -46,26 +48,39 @@ public final class MinemojiConfigScreen extends Screen {
 		int contentWidth = 310;
 		int fieldWidth = 310;
 		int fieldHeight = 20;
-		int rowGap = 26;
 		int top = 52;
+		int labelGap = 4;
+		int rowGap = 12;
+		int tokenLabelY = top;
+		int tokenFieldY = tokenLabelY + this.font.lineHeight + labelGap;
+		int pairLabelY = tokenFieldY + fieldHeight + rowGap;
+		int pairFieldY = pairLabelY + this.font.lineHeight + labelGap;
+		int hoverLabelY = pairFieldY + fieldHeight + rowGap;
+		int hoverFieldY = hoverLabelY + this.font.lineHeight + labelGap;
+		int refreshY = hoverFieldY + fieldHeight + rowGap;
 
-		this.tokenBox = new EditBox(this.font, left, top + 12, fieldWidth, fieldHeight, TOKEN_LABEL);
+		this.tokenBox = new EditBox(this.font, left, tokenFieldY, fieldWidth, fieldHeight, TOKEN_LABEL);
 		this.tokenBox.setMaxLength(512);
 		this.tokenBox.setValue(config.slackToken);
 		this.addRenderableWidget(this.tokenBox);
 
-		this.maxSuggestionsBox = new EditBox(this.font, left, top + 12 + rowGap * 2, 150, fieldHeight, MAX_SUGGESTIONS_LABEL);
+		this.maxSuggestionsBox = new EditBox(this.font, left, pairFieldY, 150, fieldHeight, MAX_SUGGESTIONS_LABEL);
 		this.maxSuggestionsBox.setMaxLength(3);
 		this.maxSuggestionsBox.setValue(Integer.toString(config.maxSuggestions));
 		this.addRenderableWidget(this.maxSuggestionsBox);
 
-		this.minimumQueryLengthBox = new EditBox(this.font, left + 160, top + 12 + rowGap * 2, 150, fieldHeight, MIN_QUERY_LABEL);
+		this.minimumQueryLengthBox = new EditBox(this.font, left + 160, pairFieldY, 150, fieldHeight, MIN_QUERY_LABEL);
 		this.minimumQueryLengthBox.setMaxLength(3);
 		this.minimumQueryLengthBox.setValue(Integer.toString(config.minimumQueryLength));
 		this.addRenderableWidget(this.minimumQueryLengthBox);
 
+		this.hoverEmojiSizeBox = new EditBox(this.font, left, hoverFieldY, 150, fieldHeight, HOVER_EMOJI_SIZE_LABEL);
+		this.hoverEmojiSizeBox.setMaxLength(3);
+		this.hoverEmojiSizeBox.setValue(Integer.toString(config.hoverEmojiSize));
+		this.addRenderableWidget(this.hoverEmojiSizeBox);
+
 		this.refreshOnStartupButton = CycleButton.onOffBuilder(config.refreshOnStartup)
-			.create(left, top + 12 + rowGap * 4, contentWidth, 20, REFRESH_ON_STARTUP_LABEL, (button, value) -> {
+			.create(left, refreshY, contentWidth, 20, REFRESH_ON_STARTUP_LABEL, (button, value) -> {
 			});
 		this.addRenderableWidget(this.refreshOnStartupButton);
 
@@ -89,14 +104,25 @@ public final class MinemojiConfigScreen extends Screen {
 
 		int left = this.width / 2 - 155;
 		int top = 52;
+		int labelGap = 4;
+		int rowGap = 12;
+		int fieldHeight = 20;
+		int tokenLabelY = top;
+		int tokenFieldY = tokenLabelY + this.font.lineHeight + labelGap;
+		int pairLabelY = tokenFieldY + fieldHeight + rowGap;
+		int pairFieldY = pairLabelY + this.font.lineHeight + labelGap;
+		int hoverLabelY = pairFieldY + fieldHeight + rowGap;
+		int hoverFieldY = hoverLabelY + this.font.lineHeight + labelGap;
+		int refreshY = hoverFieldY + fieldHeight + rowGap;
 
 		guiGraphics.centeredText(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
 		guiGraphics.text(this.font, Component.literal(this.client.config().path().toString()), left, 34, 0xFF7F8A99, false);
 
-		guiGraphics.text(this.font, TOKEN_LABEL, left, top, 0xFFE8EDF2, false);
-		guiGraphics.text(this.font, MAX_SUGGESTIONS_LABEL, left, top + 52, 0xFFE8EDF2, false);
-		guiGraphics.text(this.font, MIN_QUERY_LABEL, left + 160, top + 52, 0xFFE8EDF2, false);
-		guiGraphics.text(this.font, Component.literal("Values are saved to JSON and used immediately."), left, top + 102, 0xFF9FA8B7, false);
+		guiGraphics.text(this.font, TOKEN_LABEL, left, tokenLabelY, 0xFFE8EDF2, false);
+		guiGraphics.text(this.font, MAX_SUGGESTIONS_LABEL, left, pairLabelY, 0xFFE8EDF2, false);
+		guiGraphics.text(this.font, MIN_QUERY_LABEL, left + 160, pairLabelY, 0xFFE8EDF2, false);
+		guiGraphics.text(this.font, HOVER_EMOJI_SIZE_LABEL, left, hoverLabelY, 0xFFE8EDF2, false);
+		guiGraphics.text(this.font, Component.literal("Values are saved to JSON and used immediately."), left, refreshY + 26, 0xFF9FA8B7, false);
 		guiGraphics.text(this.font, this.statusMessage, left, this.height - 48, this.statusColor, false);
 	}
 
@@ -130,6 +156,7 @@ public final class MinemojiConfigScreen extends Screen {
 		config.slackToken = values.slackToken();
 		config.maxSuggestions = values.maxSuggestions();
 		config.minimumQueryLength = values.minimumQueryLength();
+		config.hoverEmojiSize = values.hoverEmojiSize();
 		config.refreshOnStartup = values.refreshOnStartup();
 		config.save();
 
@@ -146,6 +173,7 @@ public final class MinemojiConfigScreen extends Screen {
 		config.slackToken = values.slackToken();
 		config.maxSuggestions = values.maxSuggestions();
 		config.minimumQueryLength = values.minimumQueryLength();
+		config.hoverEmojiSize = values.hoverEmojiSize();
 		config.refreshOnStartup = values.refreshOnStartup();
 		config.save();
 
@@ -190,7 +218,15 @@ public final class MinemojiConfigScreen extends Screen {
 			return null;
 		}
 
-		return new ParsedValues(slackToken, maxSuggestions, minimumQueryLength, this.refreshOnStartupButton.getValue());
+		Integer hoverEmojiSize = this.parsePositiveInt(this.hoverEmojiSizeBox.getValue(), "Hover Emoji Size");
+		if (hoverEmojiSize == null || hoverEmojiSize > 128) {
+			if (hoverEmojiSize != null) {
+				this.setStatus("Hover Emoji Size must be 128 or less.", 0xFFFF7E7E);
+			}
+			return null;
+		}
+
+		return new ParsedValues(slackToken, maxSuggestions, minimumQueryLength, hoverEmojiSize, this.refreshOnStartupButton.getValue());
 	}
 
 	private Integer parsePositiveInt(String value, String label) {
@@ -212,6 +248,6 @@ public final class MinemojiConfigScreen extends Screen {
 		this.statusColor = color;
 	}
 
-	private record ParsedValues(String slackToken, int maxSuggestions, int minimumQueryLength, boolean refreshOnStartup) {
+	private record ParsedValues(String slackToken, int maxSuggestions, int minimumQueryLength, int hoverEmojiSize, boolean refreshOnStartup) {
 	}
 }

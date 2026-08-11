@@ -56,6 +56,10 @@ public final class SlackEmojiService {
 			.toList();
 	}
 
+	public SlackEmoji find(String name) {
+		return this.emojisByName.get(name.toLowerCase(Locale.ROOT));
+	}
+
 	public CompletableFuture<SlackEmojiRefreshResult> refreshAsync() {
 		if (!this.config.isConfigured()) {
 			this.lastError = "No Slack token configured.";
@@ -135,7 +139,7 @@ public final class SlackEmojiService {
 				String aliasOf = value.startsWith("alias:") ? value.substring("alias:".length()) : "";
 				loaded.add(new SlackEmoji(entry.getKey(), aliasOf, value));
 			}
-			this.addStandardEmoji(root.getAsJsonArray("categories"), loaded);
+			this.addSlackStandardEmoji(root, loaded);
 
 			loaded.sort(Comparator.comparing(SlackEmoji::name));
 			this.emojis = List.copyOf(loaded);
@@ -181,8 +185,8 @@ public final class SlackEmojiService {
 		return "Slack emoji.list failed: " + error;
 	}
 
-	private void addStandardEmoji(JsonArray categories, List<SlackEmoji> loaded) {
-		if (categories == null) {
+	private void addSlackStandardEmoji(JsonObject root, List<SlackEmoji> loaded) {
+		if (!root.has("categories") || !root.get("categories").isJsonArray()) {
 			return;
 		}
 
@@ -190,7 +194,7 @@ public final class SlackEmojiService {
 			.map(SlackEmoji::name)
 			.collect(java.util.stream.Collectors.toCollection(java.util.HashSet::new));
 
-		for (JsonElement categoryElement : categories) {
+		for (JsonElement categoryElement : root.getAsJsonArray("categories")) {
 			if (!categoryElement.isJsonObject()) {
 				continue;
 			}
@@ -206,7 +210,7 @@ public final class SlackEmojiService {
 					continue;
 				}
 
-				String unicode = this.standardEmojiDataset.unicodeFor(emojiName);
+				String unicode = this.standardEmojiDataset.unicodeForSlackName(emojiName);
 				if (!unicode.isBlank()) {
 					loaded.add(SlackEmoji.unicode(emojiName, unicode));
 				}
