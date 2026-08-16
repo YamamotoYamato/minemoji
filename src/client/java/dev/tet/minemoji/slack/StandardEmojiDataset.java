@@ -29,8 +29,8 @@ public final class StandardEmojiDataset {
 		return INSTANCE;
 	}
 
-	public String unicodeFor(String shortName) {
-		return this.unicodeByName.getOrDefault(shortName, "");
+	public Map<String, String> entries() {
+		return this.unicodeByName;
 	}
 
 	public String unicodeForSlackName(String slackName) {

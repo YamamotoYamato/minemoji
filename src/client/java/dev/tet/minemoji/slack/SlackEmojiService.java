@@ -186,36 +186,39 @@ public final class SlackEmojiService {
 	}
 
 	private void addSlackStandardEmoji(JsonObject root, List<SlackEmoji> loaded) {
-		if (!root.has("categories") || !root.get("categories").isJsonArray()) {
-			return;
-		}
-
 		java.util.Set<String> existingNames = loaded.stream()
 			.map(SlackEmoji::name)
 			.collect(java.util.stream.Collectors.toCollection(java.util.HashSet::new));
 
-		for (JsonElement categoryElement : root.getAsJsonArray("categories")) {
-			if (!categoryElement.isJsonObject()) {
-				continue;
-			}
-
-			JsonArray emojiNames = categoryElement.getAsJsonObject().getAsJsonArray("emoji_names");
-			if (emojiNames == null) {
-				continue;
-			}
-
-			for (JsonElement emojiNameElement : emojiNames) {
-				String emojiName = emojiNameElement.getAsString();
-				if (!existingNames.add(emojiName)) {
+		if (root.has("categories") && root.get("categories").isJsonArray()) {
+			for (JsonElement categoryElement : root.getAsJsonArray("categories")) {
+				if (!categoryElement.isJsonObject()) {
 					continue;
 				}
 
-				String unicode = this.standardEmojiDataset.unicodeForSlackName(emojiName);
-				if (!unicode.isBlank()) {
-					loaded.add(SlackEmoji.unicode(emojiName, unicode));
+				JsonArray emojiNames = categoryElement.getAsJsonObject().getAsJsonArray("emoji_names");
+				if (emojiNames == null) {
+					continue;
+				}
+
+				for (JsonElement emojiNameElement : emojiNames) {
+					String emojiName = emojiNameElement.getAsString();
+					String unicode = this.standardEmojiDataset.unicodeForSlackName(emojiName);
+					this.addStandardEmoji(emojiName, unicode, existingNames, loaded);
 				}
 			}
 		}
+
+		for (java.util.Map.Entry<String, String> entry : this.standardEmojiDataset.entries().entrySet()) {
+			this.addStandardEmoji(entry.getKey(), entry.getValue(), existingNames, loaded);
+		}
+	}
+
+	private void addStandardEmoji(String name, String unicode, java.util.Set<String> existingNames, List<SlackEmoji> loaded) {
+		if (unicode.isBlank() || !existingNames.add(name)) {
+			return;
+		}
+		loaded.add(SlackEmoji.unicode(name, unicode));
 	}
 
 	private SlackEmoji resolveImageEmoji(SlackEmoji emoji) {

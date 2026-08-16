@@ -5,7 +5,7 @@ Fabric 26.1 向けのクライアント mod です。Minecraft のチャット�
 ## 現状の仕様
 
 - Slack の `emoji.list` を使って Workspace のカスタム絵文字と alias を取得します
-- Slack の標準絵文字も `emoji.list` の category 情報から候補に含めます
+- Slack の標準絵文字と内蔵の標準絵文字マップを候補に含めます
 - 候補表示は通常チャット入力時のみで、`/` から始まるコマンド入力では無効です
 - `Up` / `Down` で候補移動、`Tab` または `Enter` で確定、`Esc` で候補を閉じます
 
