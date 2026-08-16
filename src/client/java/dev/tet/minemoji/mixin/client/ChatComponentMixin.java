@@ -2,11 +2,13 @@ package dev.tet.minemoji.mixin.client;
 
 import dev.tet.minemoji.MinemojiClient;
 import dev.tet.minemoji.chat.ChatEmojiOverlay;
+import dev.tet.minemoji.debug.PreviewDebugController;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.multiplayer.chat.GuiMessage;
 import net.minecraft.util.FormattedCharSequence;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,6 +31,15 @@ abstract class ChatComponentMixin {
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void minemoji$renderOverlay(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY, int currentTick, ChatComponent.DisplayMode displayMode, boolean focused, CallbackInfo callback) {
 		Minecraft minecraft = Minecraft.getInstance();
+		MinemojiClient client = MinemojiClient.getInstance();
+		if (client == null) {
+			return;
+		}
+		PreviewDebugController.logPreviewRenderContext(minecraft.screen, displayMode, focused);
+		if (PreviewDebugController.isPreviewFixEnabled() && !(minecraft.screen instanceof ChatScreen)) {
+			return;
+		}
+
 		var window = minecraft.getWindow();
 		int actualMouseX = (int)Math.floor(minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / (double)window.getScreenWidth());
 		int actualMouseY = (int)Math.floor(minecraft.mouseHandler.ypos() * window.getGuiScaledHeight() / (double)window.getScreenHeight());
@@ -49,7 +60,7 @@ abstract class ChatComponentMixin {
 			float opacity = (focused ? 1.0F : fadeOpacity(line.addedTime(), currentTick)) * chatOpacity;
 			if (opacity > 0.08F) {
 				int lineY = baseline - index * spacing - offset;
-				ChatEmojiOverlay.renderTooltipScreen(graphics, font, lineY, toText(line.content()), actualMouseX, actualMouseY, (float)scale, MinemojiClient.getInstance().config().hoverEmojiSize);
+				ChatEmojiOverlay.renderTooltipScreen(graphics, font, lineY, toText(line.content()), actualMouseX, actualMouseY, (float)scale, client.config().hoverEmojiSize);
 			}
 		}
 	}

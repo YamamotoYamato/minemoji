@@ -3,7 +3,10 @@ plugins {
 	id 'maven-publish'
 }
 
-version = project.mod_version
+def minemojiDebug = (project.findProperty("minemojiDebug") ?: "false").toString().toBoolean()
+def baseVersion = project.mod_version.toString()
+
+version = minemojiDebug ? baseVersion.replaceFirst(/\+/, "-debug+") : baseVersion
 group = project.maven_group
 
 base {
@@ -34,6 +37,17 @@ loom {
 		}
 	}
 
+}
+
+sourceSets {
+	client {
+		if (minemojiDebug) {
+			java.srcDir("src/client-debug/java")
+			resources.srcDir("src/client-debug/resources")
+		} else {
+			java.srcDir("src/client-release/java")
+		}
+	}
 }
 
 dependencies {

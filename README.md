@@ -55,6 +55,12 @@ Java 25 が必要です。
 ./gradlew build
 ```
 
+デバッグ機能を含むビルドは、明示的に `-PminemojiDebug=true` を指定します。
+
+```bash
+./gradlew build -PminemojiDebug=true
+```
+
 ## License
 
 MIT License

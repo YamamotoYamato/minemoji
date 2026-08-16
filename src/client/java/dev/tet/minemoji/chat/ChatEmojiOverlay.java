@@ -1,7 +1,9 @@
 package dev.tet.minemoji.chat;
 
 import dev.tet.minemoji.MinemojiClient;
+import dev.tet.minemoji.debug.PreviewDebugController;
 import dev.tet.minemoji.slack.SlackEmoji;
+import java.util.List;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -12,17 +14,23 @@ public final class ChatEmojiOverlay {
 	}
 
 	public static void renderTooltipScreen(GuiGraphicsExtractor graphics, Font font, int y, String text, int mouseX, int mouseY, float scale, int imageSize) {
-		for (ChatEmojiToken token : ChatEmojiParser.find(text)) {
+		MinemojiClient client = MinemojiClient.getInstance();
+		List<ChatEmojiToken> tokens = ChatEmojiParser.find(text);
+		for (int tokenIndex = 0; tokenIndex < tokens.size(); tokenIndex++) {
+			ChatEmojiToken token = tokens.get(tokenIndex);
 			int left = 4 + Math.round(scale * font.width(text.substring(0, token.start())));
 			int right = left + Math.round(scale * font.width(token.text()));
 			int top = Math.round(scale * (y - 1));
 			int bottom = top + Math.round(scale * CHAT_EMOJI_HEIGHT);
-			if (mouseX < left || mouseX > right || mouseY < top || mouseY > bottom) {
+			if (!PreviewDebugController.isEmojiHit(graphics, tokenIndex, left, right, top, bottom, mouseX, mouseY)) {
 				continue;
 			}
+			if (client != null) {
+				PreviewDebugController.logPreviewHit(token.name(), mouseX, mouseY);
+			}
 
-			SlackEmoji emoji = MinemojiClient.getInstance().slackEmojiService().find(token.name());
-			var texture = emoji == null ? null : MinemojiClient.getInstance().slackEmojiTextureCache().getTexture(emoji);
+			SlackEmoji emoji = client == null ? null : client.slackEmojiService().find(token.name());
+			var texture = emoji == null || client == null ? null : client.slackEmojiTextureCache().getTexture(emoji);
 			if (texture == null) {
 				return;
 			}

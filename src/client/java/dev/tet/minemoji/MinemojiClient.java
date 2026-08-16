@@ -2,6 +2,7 @@ package dev.tet.minemoji;
 
 import com.mojang.brigadier.Command;
 import dev.tet.minemoji.config.MinemojiConfig;
+import dev.tet.minemoji.debug.PreviewDebugController;
 import dev.tet.minemoji.screen.MinemojiConfigScreen;
 import dev.tet.minemoji.slack.SlackEmojiRefreshResult;
 import dev.tet.minemoji.slack.SlackEmojiService;
@@ -44,6 +45,7 @@ public final class MinemojiClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		instance = this;
+		PreviewDebugController.register();
 		registerCommands();
 		if (this.config.refreshOnStartup && this.config.isConfigured()) {
 			this.slackEmojiService.refreshAsync();
