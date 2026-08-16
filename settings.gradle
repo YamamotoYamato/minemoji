@@ -10,3 +10,12 @@ pluginManagement {
 }
 
 rootProject.name = "Minemoji"
+
+include("common")
+include("targets:mc-1.21.11")
+include("targets:mc-26.1.2")
+include("targets:mc-26.2")
+
+project(":targets:mc-1.21.11").projectDir = file("targets/mc-1.21.11")
+project(":targets:mc-26.1.2").projectDir = file("targets/mc-26.1.2")
+project(":targets:mc-26.2").projectDir = file("targets/mc-26.2")
