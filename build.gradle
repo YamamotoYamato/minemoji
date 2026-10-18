@@ -7,7 +7,8 @@ tasks.register("buildAll") {
 		project(":common").tasks.named("build"),
 		project(":targets:mc-1.21.11").tasks.named("build"),
 		project(":targets:mc-26.1.2").tasks.named("build"),
-		project(":targets:mc-26.2").tasks.named("build")
+		project(":targets:mc-26.2").tasks.named("build"),
+		project(":targets:mc-26.3").tasks.named("build")
 	)
 }
 

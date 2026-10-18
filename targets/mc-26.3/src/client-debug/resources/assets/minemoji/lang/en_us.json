@@ -1,0 +1,5 @@
+{
+  "key.minemoji.toggle_preview_fix": "Toggle Minemoji chat-only preview fix",
+  "key.minemoji.toggle_preview_debug": "Toggle Minemoji wide preview hitbox",
+  "key.minemoji.toggle_preview_force": "Force Minemoji first preview"
+}

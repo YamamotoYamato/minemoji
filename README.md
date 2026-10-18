@@ -11,6 +11,7 @@ MinecraftバージョンごとのMinecraft API・Mixin・描画処理は `target
 | 1.21.11 | `targets/mc-1.21.11` | 21 |
 | 26.1.2 | `targets/mc-26.1.2` | 25 |
 | 26.2 | `targets/mc-26.2` | 25 |
+| 26.3 | `targets/mc-26.3` | 25 |
 
 ## Slackの準備
 
@@ -46,6 +47,7 @@ Java 21またはJava 25が必要です。Windowsでは `gradlew.bat` を使用�
 ./gradlew :targets:mc-1.21.11:build
 ./gradlew :targets:mc-26.1.2:build
 ./gradlew :targets:mc-26.2:build
+./gradlew :targets:mc-26.3:build
 ```
 
 デバッグ用の広いヒットボックス・描画ログ・修正の切り替えは、明示的にデバッグプロファイルを指定したビルドだけに含まれます。
